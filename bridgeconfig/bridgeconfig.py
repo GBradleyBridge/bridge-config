@@ -1,4 +1,5 @@
 import boto3
+import logging
 
 
 class BridgeConfig(object):
@@ -10,11 +11,14 @@ class BridgeConfig(object):
 
     def get_parameter(self, path, type="string", decrypt=False):
         fullpath = "/{}/{}/{}".format(self.project, self.environment, path)
+        logging.debug('getting parameter: {}'.format(fullpath))
         try:
             value = self.client.get_parameter(
                 Name=fullpath, WithDecryption=decrypt
             )['Parameter']['Value']
+            logging.debug('raw value: {}'.format(value))
         except self.client.exceptions.ParameterNotFound, e:
+            logging.warning('requested key {} not found'.format(fullpath))
             return None
 
         if type == "boolean":
