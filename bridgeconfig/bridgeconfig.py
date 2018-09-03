@@ -10,9 +10,12 @@ class BridgeConfig(object):
 
     def get_parameter(self, path, type="string", decrypt=False):
         fullpath = "/{}/{}/{}".format(self.project, self.environment, path)
-        value = self.client.get_parameter(
-            Name=fullpath, WithDecryption=decrypt
-        )['Parameter']['Value']
+        try:
+            value = self.client.get_parameter(
+                Name=fullpath, WithDecryption=decrypt
+            )['Parameter']['Value']
+        except self.client.exceptions.ParameterNotFound, e:
+            return None
 
         if type == "boolean":
             return bool(value)
@@ -27,3 +30,5 @@ if __name__ == "__main__":
     print BC.get_parameter('debug', 'boolean')
     print BC.get_parameter('db_user', 'string')
     print BC.get_parameter(path='db_password', type='string', decrypt=False)
+    print BC.get_parameter('no_existe', 'string')
+    print BC.get_parameter('key1/subkey1', 'string')
