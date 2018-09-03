@@ -27,4 +27,4 @@ JAJA_CONFIG = {"as": "b", "cd": "dd"}
 
 The path of the parameters should be:
 
-/project/environment/key/
+**/project/environment/key/**
