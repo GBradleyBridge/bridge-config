@@ -21,6 +21,7 @@ BC = bridgeconfig.BridgeConfig(project="<project_name>", environment="<environme
 DEBUG = BC.get_parameter(path="debug", type="boolean")
 SUBITEM = BC.get_parameter(path="key1/subkey1", type="boolean")
 DB_USER = BC.get_parameter('db_user', 'string')
+NON_EXISTENT = BC.get_parameter('non_existent', 'string')
 DB_PASSWORD =  BC.get_parameter(path='db_password', type='string', 
                             decrypt=True)
 JAJA_CONFIG = {"as": "b", "cd": "dd"}
