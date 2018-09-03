@@ -28,6 +28,17 @@ class BridgeConfig(object):
         else:
             return value
 
+    def get_all_parameters(self):
+        path = "/{}/{}/".format(self.project, self.environment)
+        raw_paramters = self.client.get_parameters_by_path(
+            Path=path,
+            Recursive=True
+        )
+        return [
+            {'name': x['Name'], 'value': x['Value']}
+            for x in raw_paramters['Parameters']
+        ]
+
 
 if __name__ == "__main__":
     BC = BridgeConfig('test', 'develop')
@@ -36,3 +47,4 @@ if __name__ == "__main__":
     print BC.get_parameter(path='db_password', type='string', decrypt=False)
     print BC.get_parameter('no_existe', 'string')
     print BC.get_parameter('key1/subkey1', 'string')
+    print BC.get_all_parameters()
