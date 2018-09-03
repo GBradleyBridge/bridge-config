@@ -12,7 +12,7 @@ Usage:
 
 In your settings.py:
 
-````
+```
 from bridgeconfig import bridgeconfig
 
 BC = bridgeconfig.BridgeConfig(project="<project_name>", environment="<environment>")
@@ -24,7 +24,7 @@ DB_PASSWORD =  BC.get_parameter(path='db_password', type='string',
 JAJA_CONFIG = {"as": "b", "cd": "dd"}
 
 print DEBUG, DB_USER, DB_PASSWORD, JAJA_CONFIG
-````
+```
 
 The path of the parameters should be:
 
