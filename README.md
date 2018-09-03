@@ -19,6 +19,7 @@ from bridgeconfig import bridgeconfig
 BC = bridgeconfig.BridgeConfig(project="<project_name>", environment="<environment>")
 
 DEBUG = BC.get_parameter(path="debug", type="boolean")
+SUBITEM = BC.get_parameter(path="key1/subkey1", type="boolean")
 DB_USER = BC.get_parameter('db_user', 'string')
 DB_PASSWORD =  BC.get_parameter(path='db_password', type='string', 
                             decrypt=True)
