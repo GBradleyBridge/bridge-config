@@ -28,4 +28,4 @@ print DEBUG, DB_USER, DB_PASSWORD, JAJA_CONFIG
 
 The path of the parameters should be:
 
-*/<project>/<environment>/<key>/*
+**/<project>/<environment>/<key>/**
