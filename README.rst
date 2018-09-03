@@ -12,7 +12,7 @@ Usage:
 
 In your settings.py:
 
-.. code:: python
+:: 
   from bridgeconfig import bridgeconfig
 
   BC = bridgeconfig.BridgeConfig(project="<project_name>", environment="<environment>")
@@ -23,7 +23,6 @@ In your settings.py:
                               decrypt=True)
   JAJA_CONFIG = {"as": "b", "cd": "dd"}
 
-  print DEBUG, DB_USER, DB_PASSWORD, JAJA_CONFIG
 
 The path of the parameters should be:
 
