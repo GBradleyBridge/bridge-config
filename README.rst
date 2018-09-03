@@ -12,7 +12,7 @@ Usage:
 
 In your settings.py:
 
-:: :Code:
+:parsed-literal:
   from bridgeconfig import bridgeconfig
 
   BC = bridgeconfig.BridgeConfig(project="<project_name>", environment="<environment>")
