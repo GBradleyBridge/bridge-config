@@ -31,12 +31,12 @@ class BridgeConfig(object):
         else:
             return value
 
-    def get_all_parameters(self):
+    def get_all_parameters(self, decrypt=False):
         path = "/{}/{}/".format(self.project, self.environment)
         raw_paramters = self.client.get_parameters_by_path(
             Path=path,
             Recursive=True,
-            WithDecryption=True
+            WithDecryption=decrypt
         )
         return [
             {'name': x['Name'], 'value': x['Value']}
@@ -65,5 +65,6 @@ if __name__ == "__main__":
     print BC.get_parameter('no_existe', 'string')
     print BC.get_parameter('key1/subkey1', 'string')
     print BC.get_all_parameters()
+    print BC.get_all_parameters(decrypt=True)
     BC.set_parameter('new_param', '123abc456', 'String')
     print BC.delete_paramter('123abc456')
