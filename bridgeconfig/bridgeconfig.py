@@ -50,7 +50,11 @@ class BridgeConfig(object):
 
     def delete_paramter(self, path):
         fullpath = self.__get_full_path(path)
-        return self.client.delete_parameter(Name=fullpath)
+        try:
+            return self.client.delete_parameter(Name=fullpath)
+        except self.client.exceptions.ParameterNotFound, e:
+            logging.warning('requested key {} not found'.format(fullpath))
+            return None
 
 
 if __name__ == "__main__":
