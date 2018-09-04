@@ -46,7 +46,6 @@ class BridgeConfig(object):
                     WithDecryption=decrypt,
                     NextToken=raw_paramters['NextToken']
                 )
-                second_round = 1
             else:
                 raw_paramters = self.client.get_parameters_by_path(
                     Path=path,
@@ -59,7 +58,7 @@ class BridgeConfig(object):
                     {'name': x['Name'], 'value': x['Value']}
                 )
 
-            if second_round == 1 and 'NextToken' not in raw_paramters.keys():
+            if 'NextToken' not in raw_paramters.keys():
                 finish = 1
 
         return result
