@@ -31,12 +31,13 @@ class BridgeConfig(object):
         else:
             return value
 
-    def get_all_parameters(self, decrypt=False):
+    def get_all_parameters(self, decrypt=False, count=10):
         path = "/{}/{}/".format(self.project, self.environment)
         raw_paramters = self.client.get_parameters_by_path(
             Path=path,
             Recursive=True,
-            WithDecryption=decrypt
+            WithDecryption=decrypt,
+            MaxResult=count
         )
         return [
             {'name': x['Name'], 'value': x['Value']}
