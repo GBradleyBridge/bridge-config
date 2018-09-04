@@ -37,7 +37,7 @@ class BridgeConfig(object):
             Path=path,
             Recursive=True,
             WithDecryption=decrypt,
-            MaxResult=count
+            MaxResults=count
         )
         return [
             {'name': x['Name'], 'value': x['Value']}
