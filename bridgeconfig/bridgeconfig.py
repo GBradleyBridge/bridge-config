@@ -33,16 +33,36 @@ class BridgeConfig(object):
 
     def get_all_parameters(self, decrypt=False, count=10):
         path = "/{}/{}/".format(self.project, self.environment)
-        raw_paramters = self.client.get_parameters_by_path(
-            Path=path,
-            Recursive=True,
-            WithDecryption=decrypt,
-            MaxResult=count
-        )
-        return [
-            {'name': x['Name'], 'value': x['Value']}
-            for x in raw_paramters['Parameters']
-        ]
+        result = list()
+        finish = 0
+        second_round = 0
+        raw_paramters = dict()
+
+        while finish == 0:
+            if 'NextToken' in raw_paramters.keys():
+                raw_paramters = self.client.get_parameters_by_path(
+                    Path=path,
+                    Recursive=True,
+                    WithDecryption=decrypt,
+                    NextToken=raw_paramters['NextToken']
+                )
+                second_round = 1
+            else:
+                raw_paramters = self.client.get_parameters_by_path(
+                    Path=path,
+                    Recursive=True,
+                    WithDecryption=decrypt,
+                )
+
+            for x in raw_paramters['Parameters']:
+                result.append(
+                    {'name': x['Name'], 'value': x['Value']}
+                )
+
+            if second_round == 1 and 'NextToken' not in raw_paramters.keys():
+                finish = 1
+
+        return result
 
     def set_parameter(self, path, value, type="String"):
         fullpath = self.__get_full_path(path)
@@ -59,13 +79,15 @@ class BridgeConfig(object):
 
 
 if __name__ == "__main__":
-    BC = BridgeConfig('test', 'develop')
-    print BC.get_parameter('debug', 'boolean')
-    print BC.get_parameter('db_user', 'string')
-    print BC.get_parameter(path='db_password', type='string', decrypt=False)
-    print BC.get_parameter('no_existe', 'string')
-    print BC.get_parameter('key1/subkey1', 'string')
-    print BC.get_all_parameters()
-    print BC.get_all_parameters(decrypt=True)
-    BC.set_parameter('new_param', '123abc456', 'String')
-    print BC.delete_paramter('123abc456')
+    BC = BridgeConfig('wf-proxy', 'develop')
+    # print BC.get_parameter('debug', 'boolean')
+    # print BC.get_parameter('db_user', 'string')
+    # print BC.get_parameter(path='db_password', type='string', decrypt=False)
+    # print BC.get_parameter('no_existe', 'string')
+    # print BC.get_parameter('key1/subkey1', 'string')
+    # print BC.get_all_parameters()
+    # for x in BC.get_all_parameters():
+    #     print x
+    # print BC.get_all_parameters(decrypt=True)
+    # BC.set_parameter('new_param', '123abc456', 'String')
+    # print BC.delete_paramter('123abc456')
