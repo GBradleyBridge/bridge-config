@@ -9,11 +9,11 @@ class BridgeConfig(object):
         self.environment = environment
         self.client = boto3.client('ssm')
 
-    def __get_full_path(self, path):
+    def get_full_path(self, path):
         return "/{}/{}/{}".format(self.project, self.environment, path)
 
     def get_parameter(self, path, type="string", decrypt=False):
-        fullpath = self.__get_full_path(path)
+        fullpath = self.get_full_path(path)
         logging.debug('getting parameter: {}'.format(fullpath))
         try:
             value = self.client.get_parameter(
@@ -46,7 +46,6 @@ class BridgeConfig(object):
                     WithDecryption=decrypt,
                     NextToken=raw_paramters['NextToken']
                 )
-                second_round = 1
             else:
                 raw_paramters = self.client.get_parameters_by_path(
                     Path=path,
@@ -59,18 +58,18 @@ class BridgeConfig(object):
                     {'name': x['Name'], 'value': x['Value']}
                 )
 
-            if second_round == 1 and 'NextToken' not in raw_paramters.keys():
+            if 'NextToken' not in raw_paramters.keys():
                 finish = 1
 
         return result
 
     def set_parameter(self, path, value, type="String"):
-        fullpath = self.__get_full_path(path)
+        fullpath = self.get_full_path(path)
         return self.client.put_parameter(Name=fullpath, Value=value, Type=type,
                                          Overwrite=True)
 
     def delete_paramter(self, path):
-        fullpath = self.__get_full_path(path)
+        fullpath = self.get_full_path(path)
         try:
             return self.client.delete_parameter(Name=fullpath)
         except self.client.exceptions.ParameterNotFound, e:
