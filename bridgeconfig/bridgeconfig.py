@@ -9,8 +9,11 @@ class BridgeConfig(object):
         self.environment = environment
         self.client = boto3.client('ssm')
 
+    def __get_full_path(self, path):
+        return "/{}/{}/{}".format(self.project, self.environment, path)
+
     def get_parameter(self, path, type="string", decrypt=False):
-        fullpath = "/{}/{}/{}".format(self.project, self.environment, path)
+        fullpath = self.__get_full_path(path)
         logging.debug('getting parameter: {}'.format(fullpath))
         try:
             value = self.client.get_parameter(
@@ -32,12 +35,22 @@ class BridgeConfig(object):
         path = "/{}/{}/".format(self.project, self.environment)
         raw_paramters = self.client.get_parameters_by_path(
             Path=path,
-            Recursive=True
+            Recursive=True,
+            WithDecryption=True
         )
         return [
             {'name': x['Name'], 'value': x['Value']}
             for x in raw_paramters['Parameters']
         ]
+
+    def set_parameter(self, path, value, type="String"):
+        fullpath = self.__get_full_path(path)
+        return self.client.put_parameter(Name=fullpath, Value=value, Type=type,
+                                         Overwrite=True)
+
+    def delete_paramter(self, path):
+        fullpath = self.__get_full_path(path)
+        return self.client.delete_parameter(Name=fullpath)
 
 
 if __name__ == "__main__":
@@ -48,3 +61,5 @@ if __name__ == "__main__":
     print BC.get_parameter('no_existe', 'string')
     print BC.get_parameter('key1/subkey1', 'string')
     print BC.get_all_parameters()
+    BC.set_parameter('new_param', '123abc456', 'String')
+    print BC.delete_paramter('123abc456')

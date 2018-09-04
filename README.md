@@ -18,14 +18,16 @@ from bridgeconfig import bridgeconfig
 
 BC = bridgeconfig.BridgeConfig(project="<project_name>", environment="<environment>")
 
-DEBUG = BC.get_parameter(path="debug", type="boolean")
-SUBITEM = BC.get_parameter(path="key1/subkey1", type="boolean")
-DB_USER = BC.get_parameter('db_user', 'string')
+DEBUG = BC.get_parameter(path="debug", type="boolean") # Cast to boolean 
+SUBITEM = BC.get_parameter(path="key1/subkey1", type="boolean") # Cast to boolean
+DB_USER = BC.get_parameter('db_user', 'string') # Cast to string
+NON_EXISTENT = BC.get_parameter('non_existent', 'string') # This item doesn't exists so
+                                                          # None will be stored in SUBITEM
 DB_PASSWORD =  BC.get_parameter(path='db_password', type='string', 
-                            decrypt=True)
-JAJA_CONFIG = {"as": "b", "cd": "dd"}
+                            decrypt=True) # The DECRYPTED version of db_password will be saved
+JAJA_CONFIG = {"as": "b", "cd": "dd"} # For educative intentions
 ```
 
 The path of the parameters should be:
 
-**/project/environment/key/**
+**/project/environment/key1/subkey1/subkey2/.../subkeyN**
