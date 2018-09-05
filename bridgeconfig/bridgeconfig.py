@@ -1,5 +1,6 @@
 import boto3
 import logging
+import json
 
 
 class BridgeConfig(object):
@@ -28,6 +29,10 @@ class BridgeConfig(object):
             return bool(value)
         elif type == "integer":
             return int(value)
+        elif type == "json":
+            return json.loads(value)
+        elif type == "code":
+            return eval(value)
         else:
             return value
 
@@ -78,8 +83,11 @@ class BridgeConfig(object):
 
 
 if __name__ == "__main__":
-    BC = BridgeConfig('wf-proxy', 'develop')
+    BC = BridgeConfig('test', 'develop')
     # print BC.get_parameter('debug', 'boolean')
+    # print BC.get_parameter('json', 'json')
+    # print BC.get_parameter('json2', 'code')
+    # print BC.get_parameter('json3', 'code')
     # print BC.get_parameter('db_user', 'string')
     # print BC.get_parameter(path='db_password', type='string', decrypt=False)
     # print BC.get_parameter('no_existe', 'string')
