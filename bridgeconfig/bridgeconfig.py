@@ -8,7 +8,7 @@ class BridgeConfig(object):
     def __init__(self, project, environment):
         self.project = project
         self.environment = environment
-        self.client = boto3.client('ssm')
+        self.client = boto3.client('ssm', region_name="us-east-1")
 
     def get_full_path(self, path):
         return "/{}/{}/{}".format(self.project, self.environment, path)
