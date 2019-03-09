@@ -31,6 +31,8 @@ class BridgeConfig(object):
             return int(value)
         elif type == "json":
             return json.loads(value)
+        elif type == "float":
+            return float(value)
         elif type == "code":
             return eval(value)
         else:
