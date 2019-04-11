@@ -13,7 +13,7 @@ class BridgeConfig(object):
     def get_full_path(self, path):
         return "/{}/{}/{}".format(self.project, self.environment, path)
 
-    def get_parameter(self, path, type="string", decrypt=False):
+    def get_parameter(self, path, type="string", decrypt=True, default=None):
         fullpath = self.get_full_path(path)
         logging.debug('getting parameter: {}'.format(fullpath))
         try:
@@ -22,8 +22,8 @@ class BridgeConfig(object):
             )['Parameter']['Value']
             logging.debug('raw value: {}'.format(value))
         except self.client.exceptions.ParameterNotFound, e:
-            logging.warning('requested key {} not found'.format(fullpath))
-            return None
+            logging.error('requested key {} not found'.format(fullpath))
+            return default
 
         if type == "boolean":
             return bool(value)
