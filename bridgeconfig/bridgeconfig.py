@@ -1,15 +1,35 @@
 from __future__ import print_function
+import os
 import boto3
 import logging
 import json
+import configparser
+
+
+class LocalEnvironmentFileDoesNotExists(Exception):
+    pass
 
 
 class BridgeConfig(object):
 
-    def __init__(self, project, environment):
+    def __init__(self, project, environment, local_env_file=None):
         self.project = project
         self.environment = environment
-        self.client = boto3.client('ssm', region_name="us-east-1")
+        if environment != "local":
+            self.client = boto3.client('ssm', region_name="us-east-1")
+        else:
+            self.local_env_file = local_env_file
+
+    def get_local_env_from_file(self, local_env_file):
+        if not os.path.exists(local_env_file):
+            raise LocalEnvironmentFileDoesNotExists(
+                "Local environment file does not exists"
+            )
+
+        config = configparser.ConfigParser()
+        config.read(local_env_file)
+
+        return config
 
     def get_full_path(self, path):
         return "/{}/{}/{}".format(self.project, self.environment, path)
@@ -17,6 +37,17 @@ class BridgeConfig(object):
     def get_parameter(self, path, type="string", decrypt=True, default=None):
         fullpath = self.get_full_path(path)
         logging.debug('getting parameter: {}'.format(fullpath))
+
+        if self.environment == "local":
+            return self.get_local_parameter(path, type)
+        else:
+            return self.get_remote_parameter(fullpath, type, decrypt, default)
+
+    def get_local_parameter(self, path, type):
+        config = self.get_local_env_from_file(self.local_env_file)
+        return self.__cast_value(config['default'][path], type)
+
+    def get_remote_parameter(self, fullpath, type="string", decrypt=True, default=None):
         try:
             value = self.client.get_parameter(
                 Name=fullpath, WithDecryption=decrypt
@@ -26,6 +57,9 @@ class BridgeConfig(object):
             logging.error('requested key {} not found'.format(fullpath))
             return default
 
+        return self.__cast_value(value, type)
+
+    def __cast_value(self, value, type):
         if type == "boolean":
             return bool(value)
         elif type == "integer":
