@@ -1,3 +1,4 @@
+from __future__ import print_function
 import boto3
 import logging
 import json
@@ -21,7 +22,7 @@ class BridgeConfig(object):
                 Name=fullpath, WithDecryption=decrypt
             )['Parameter']['Value']
             logging.debug('raw value: {}'.format(value))
-        except self.client.exceptions.ParameterNotFound, e:
+        except self.client.exceptions.ParameterNotFound as e:
             logging.error('requested key {} not found'.format(fullpath))
             return default
 
@@ -79,7 +80,7 @@ class BridgeConfig(object):
         fullpath = self.get_full_path(path)
         try:
             return self.client.delete_parameter(Name=fullpath)
-        except self.client.exceptions.ParameterNotFound, e:
+        except self.client.exceptions.ParameterNotFound as e:
             logging.warning('requested key {} not found'.format(fullpath))
             return None
 
