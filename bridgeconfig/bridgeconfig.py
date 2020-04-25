@@ -42,7 +42,7 @@ class BridgeConfig(object):
 
     def get_local_parameter(self, path, type):
         config = self.get_local_env_from_file()
-        return self.__cast_value(config['default'][path], type)
+        return self.__cast_value(config['local'][path], type)
 
     def get_remote_parameter(self, fullpath, type="string", decrypt=True, default=None):
         try:
