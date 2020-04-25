@@ -12,22 +12,19 @@ class LocalEnvironmentFileDoesNotExists(Exception):
 
 class BridgeConfig(object):
 
-    def __init__(self, project, environment, local_env_file=None):
+    def __init__(self, project, environment):
         self.project = project
         self.environment = environment
-        if environment != "local":
-            self.client = boto3.client('ssm', region_name="us-east-1")
+        self.local_env_file = ".local.env"
+        if os.path.exists(".local.env"):
+            self.environment = "local"
+            logging.warning("using local environment variables")
         else:
-            self.local_env_file = local_env_file
+            self.client = boto3.client('ssm', region_name="us-east-1")
 
-    def get_local_env_from_file(self, local_env_file):
-        if not os.path.exists(local_env_file):
-            raise LocalEnvironmentFileDoesNotExists(
-                "Local environment file does not exists"
-            )
-
+    def get_local_env_from_file(self):
         config = configparser.ConfigParser()
-        config.read(local_env_file)
+        config.read(self.local_env_file)
 
         return config
 
@@ -44,7 +41,7 @@ class BridgeConfig(object):
             return self.get_remote_parameter(fullpath, type, decrypt, default)
 
     def get_local_parameter(self, path, type):
-        config = self.get_local_env_from_file(self.local_env_file)
+        config = self.get_local_env_from_file()
         return self.__cast_value(config['default'][path], type)
 
     def get_remote_parameter(self, fullpath, type="string", decrypt=True, default=None):
@@ -74,6 +71,12 @@ class BridgeConfig(object):
             return value
 
     def get_all_parameters(self, decrypt=False, count=10):
+        if self.environment == "local":
+            logging.warning(
+                "get_all_parameters:running in local environment, check .local.env"
+            )
+            return None
+
         path = "/{}/{}/".format(self.project, self.environment)
         result = list()
         finish = 0
@@ -106,11 +109,18 @@ class BridgeConfig(object):
         return result
 
     def set_parameter(self, path, value, type="String"):
+        if self.environment == "local":
+            logging.warning("set_parameter is disabled running in local environment")
+            return None
+
         fullpath = self.get_full_path(path)
         return self.client.put_parameter(Name=fullpath, Value=value, Type=type,
                                          Overwrite=True)
 
     def delete_paramter(self, path):
+        if self.environment == "local":
+            logging.warning("delete_parameter is disabled running in local environment")
+            return None
         fullpath = self.get_full_path(path)
         try:
             return self.client.delete_parameter(Name=fullpath)
