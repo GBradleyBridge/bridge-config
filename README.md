@@ -8,7 +8,6 @@ with the desired version
 -e git+git@github.com:BridgeMarketing/bridge-config.git@v0.1#egg=bridge_config
 ```
 
-
 Usage:
 
 In your settings.py:
@@ -33,4 +32,8 @@ DICT = BC.get_parameter(path='python_dict', type='code')
 
 The path of the parameters should be:
 
-**/project/environment/key1/subkey1/subkey2/.../subkeyN**
+**/project/environment/key1/subkey1/subkey2/.../subkeyN** 
+
+**LOCAL ENVIRONMENT**
+
+

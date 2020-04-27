@@ -2,5 +2,6 @@
 venv/
 build/
 bridge_config.egg-info/*
+bridge_config.egg-info
 dist/
 .local.env
