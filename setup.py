@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(name='bridge-config',
-      version='0.13',
+      version='1.0.1',
       description='Bridge Marketing SSM simple manager',
       url='https://github.com/BridgeMarketing/bridge-config',
       author='Bridge',
@@ -9,6 +9,6 @@ setup(name='bridge-config',
       license='GPL',
       long_description=open('README.md').read(),
       packages=find_packages(exclude=('tests')),
-      install_requires=['boto3==1.8.6'],
+      install_requires=['boto3>=1.10.5'],
       #tests_require=['mock', 'nose', 'requests-mock'],
       zip_safe=False)
