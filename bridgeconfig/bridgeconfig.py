@@ -39,6 +39,18 @@ class BridgeConfig(object):
         else:
             return value
 
+    def is_encrypted(self, path, default=None):
+        fullpath = self.get_full_path(path)
+        try:
+            parameter_type = self.client.get_parameter(
+                Name=fullpath
+            )['Parameter']['Type']
+        except self.client.exceptions.ParameterNotFound as e:
+            logging.error('requested key {} not found'.format(fullpath))
+            return default
+
+        return parameter_type == "SecureString"
+
     def get_all_parameters(self, decrypt=False, count=10):
         path = "/{}/{}/".format(self.project, self.environment)
         result = list()
@@ -86,13 +98,14 @@ class BridgeConfig(object):
 
 
 if __name__ == "__main__":
-    BC = BridgeConfig('test', 'develop')
-    # print BC.get_parameter('debug', 'boolean')
+    # BC = BridgeConfig('test', 'develop')
+    # print(BC.get_parameter('debug', 'boolean'))
     # print BC.get_parameter('json', 'json')
     # print BC.get_parameter('json2', 'code')
     # print BC.get_parameter('json3', 'code')
     # print BC.get_parameter('db_user', 'string')
-    # print BC.get_parameter(path='db_password', type='string', decrypt=False)
+    # print( BC.get_parameter(path='db_password', type='string', decrypt=False) )
+    # print( BC.is_encrypted(path='db_password') )
     # print BC.get_parameter('no_existe', 'string')
     # print BC.get_parameter('key1/subkey1', 'string')
     # print BC.get_all_parameters()
