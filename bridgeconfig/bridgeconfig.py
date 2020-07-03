@@ -96,6 +96,9 @@ class BridgeConfig(object):
             logging.warning('requested key {} not found'.format(fullpath))
             return None
 
+    def version(self):
+        print("bridgeconfig v1.1")
+
 
 #if __name__ == "__main__":
     # BC = BridgeConfig('test', 'develop')

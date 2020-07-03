@@ -1,11 +1,11 @@
 Bridge Marketing config
 =======================
 
-Add the following line to your project's requirement.txt file and replace v0.1
+Add the following line to your project's requirement.txt file and replace 
 with the desired version
 
 ```
--e git+https@github.com:BridgeMarketing/bridge-config.git@v0.0#egg=bridge_config
+-e git+https@github.com:BridgeMarketing/bridge-config.git@v1.1#egg=bridge_config
 ```
 
 
