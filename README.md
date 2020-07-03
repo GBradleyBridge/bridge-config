@@ -1,11 +1,11 @@
 Bridge Marketing config
 =======================
 
-Add the following line to your project's requirement.txt file and replace v0.1
+Add the following line to your project's requirement.txt file and replace 
 with the desired version
 
 ```
--e git+https@github.com:BridgeMarketing/bridge-config.git@v0.1#egg=bridge_config
+-e git+https@github.com:BridgeMarketing/bridge-config.git@v1.1#egg=bridge_config
 ```
 
 
@@ -30,6 +30,16 @@ JSON_VALUE = BC.get_parameter(path='weird_config', type='json')
 LIST = BC.get_parameter(path='list_of_things', type='code')
 DICT = BC.get_parameter(path='python_dict', type='code')
 ```
+
+Check if a parameter is encrypted or not:
+
+```python
+if BC.is_encrypted(path='db_password'):
+    print("it is encrypted")
+else:
+    print("it isn't encrypted")
+```
+
 
 The path of the parameters should be:
 
