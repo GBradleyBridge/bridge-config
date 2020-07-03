@@ -97,7 +97,7 @@ class BridgeConfig(object):
             return None
 
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
     # BC = BridgeConfig('test', 'develop')
     # print(BC.get_parameter('debug', 'boolean'))
     # print BC.get_parameter('json', 'json')
