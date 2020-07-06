@@ -127,7 +127,7 @@ class BridgeConfig(object):
             return None
 
     def version(self):
-        print("bridgeconfig v1.1")
+        print("bridgeconfig v1.2")
 
 
 if __name__ == "__main__":
