@@ -5,7 +5,7 @@ Add the following line to your project's requirement.txt file and replace
 with the desired version
 
 ```
--e git+https@github.com:BridgeMarketing/bridge-config.git@v1.1#egg=bridge_config
+-e git+https@github.com:BridgeMarketing/bridge-config.git@v1.2#egg=bridge_config
 ```
 
 
