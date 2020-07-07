@@ -51,7 +51,7 @@ class BridgeConfig(object):
         result = list(filter(lambda x: x['Name'] == fullpath, self.cache))[0]
         return result['Type'] == "SecureString"
 
-    def get_raw_parameters(self):
+    def get_raw_parameters(self, decrypt=False):
         path = "/{}/{}/".format(self.project, self.environment)
         result = list()
         finish = 0
@@ -63,14 +63,14 @@ class BridgeConfig(object):
                 raw_paramters = self.client.get_parameters_by_path(
                     Path=path,
                     Recursive=True,
-                    WithDecryption=False, # get all raw, no need to decrypt,
+                    WithDecryption=decrypt,
                     NextToken=raw_paramters['NextToken']
                 )
             else:
                 raw_paramters = self.client.get_parameters_by_path(
                     Path=path,
                     Recursive=True,
-                    WithDecryption=False, # get all raw, no need to decrypt
+                    WithDecryption=decrypt
                 )
 
             for x in raw_paramters['Parameters']:
@@ -127,31 +127,32 @@ class BridgeConfig(object):
             return None
 
     def version(self):
-        print("bridgeconfig v1.2")
+        print("bridgeconfig v1.2.1")
 
 
 if __name__ == "__main__":
     logging.basicConfig()
     logging.getLogger().setLevel(logging.INFO)
     BC = BridgeConfig('test', 'develop')
-    print(BC.get_parameter('debug', 'boolean'))
-    print(BC.get_parameter('json', 'json'))
+    print(BC.get_raw_parameters(decrypt=True))
+    #print(BC.get_parameter('debug', 'boolean'))
+    #print(BC.get_parameter('json', 'json'))
     # print BC.get_parameter('json2', 'code')
     # print BC.get_parameter('json3', 'code')
     # print BC.get_parameter('db_user', 'string')
-    print( BC.get_parameter(path='db_password', type='string', decrypt=False) )
-    print( BC.is_encrypted(path='db_password') )
-    print( BC.is_encrypted(path='db_password') )
-    print( BC.is_encrypted(path='db_password') )
-    print( BC.is_encrypted(path='db_password') )
-    print( BC.is_encrypted(path='db_password') )
-    print( BC.is_encrypted(path='db_password') )
+    #print( BC.get_parameter(path='db_password', type='string', decrypt=False) )
+    #print( BC.is_encrypted(path='db_password') )
+    #print( BC.is_encrypted(path='db_password') )
+    #print( BC.is_encrypted(path='db_password') )
+    #print( BC.is_encrypted(path='db_password') )
+    #print( BC.is_encrypted(path='db_password') )
+    #print( BC.is_encrypted(path='db_password') )
     # print BC.get_parameter('no_existe', 'string')
     # print BC.get_parameter('key1/subkey1', 'string')
     # print BC.get_all_parameters()
-    for x in BC.get_all_parameters():
-        print(x)
-    BC.refresh_cache()
+    #for x in BC.get_all_parameters():
+    #    print(x)
+    #BC.refresh_cache()
     # print BC.get_all_parameters(decrypt=True)
     # BC.set_parameter('new_param', '123abc456', 'String')
     # print BC.delete_paramter('123abc456')
