@@ -9,6 +9,6 @@ setup(name='bridge-config',
       license='GPL',
       long_description=open('README.md').read(),
       packages=find_packages(exclude=('tests')),
-      install_requires=['boto3>=1.14'],
+      install_requires=['boto3'],
       #tests_require=['mock', 'nose', 'requests-mock'],
       zip_safe=False)
