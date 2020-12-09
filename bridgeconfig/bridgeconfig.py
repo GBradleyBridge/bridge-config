@@ -10,13 +10,16 @@ class BridgeConfig(object):
         self.project = project
         self.environment = environment
         self.client = boto3.client('ssm', region_name="us-east-1")
-        logging.info("caching raw parameters")
-        self.cache = self.get_raw_parameters()
-        logging.info("raw parameters cached")
+
+    @property
+    def cache(self):
+        if not getattr(self, "_cache"):
+            self.refresh_cache()
+        return self._cache
 
     def refresh_cache(self):
         logging.info("refreshing cache")
-        self.cache = self.get_raw_parameters()
+        self._cache = self.get_raw_parameters()
 
     def get_full_path(self, path):
         return "/{}/{}/{}".format(self.project, self.environment, path)
