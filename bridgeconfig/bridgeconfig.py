@@ -24,6 +24,13 @@ class BridgeConfig(object):
     def get_full_path(self, path):
         return "/{}/{}/{}".format(self.project, self.environment, path)
 
+    def get_parameter_history(self, path, decrypt):
+        fullpath = self.get_full_path(path)
+        history = self.client.get_parameter_history(
+            Name=fullpath, WithDecryption=decrypt
+        )['Parameters']
+        return history
+
     def get_parameter(self, path, type="string", decrypt=True, default=None):
         fullpath = self.get_full_path(path)
         logging.debug('getting parameter: {}'.format(fullpath))
@@ -137,7 +144,8 @@ if __name__ == "__main__":
     logging.basicConfig()
     logging.getLogger().setLevel(logging.INFO)
     BC = BridgeConfig('test', 'develop')
-    print(BC.get_raw_parameters(decrypt=True))
+    #print(BC.get_raw_parameters(decrypt=True))
+    print(BC.get_parameter_history('debug', decrypt=True))
     #print(BC.get_parameter('debug', 'boolean'))
     #print(BC.get_parameter('json', 'json'))
     # print BC.get_parameter('json2', 'code')
