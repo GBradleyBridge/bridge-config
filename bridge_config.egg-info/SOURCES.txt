@@ -1,9 +1,0 @@
-setup.py
-bridge_config.egg-info/PKG-INFO
-bridge_config.egg-info/SOURCES.txt
-bridge_config.egg-info/dependency_links.txt
-bridge_config.egg-info/not-zip-safe
-bridge_config.egg-info/requires.txt
-bridge_config.egg-info/top_level.txt
-bridgeconfig/__init__.py
-bridgeconfig/bridgeconfig.py
