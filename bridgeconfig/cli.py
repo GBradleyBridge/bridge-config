@@ -36,21 +36,27 @@ def pass_bridgeconfig(func):
 @click.option(
     "-e",
     "--environment",
-    default="prod",
-    type=click.Choice(("dev", "stg", "prod", "All"), case_sensitive=False),
+    default="dev",
+    type=click.Choice(
+        ("dev", "develop", "stg", "staging", "prod", "production", "All"),
+        case_sensitive=False,
+    ),
     envvar="ENVIRONMENT",
     help="environment name",
 )
 @click.pass_context
 def cli(ctx, project, environment):
-    if project is None:
-        from .conf import get_app_name
+    if ctx.invoked_subcommand != "version":
+        if project is None:
+            from .conf import get_app_name
 
-        project = get_app_name()
+            project = get_app_name()
+
+        bc = BridgeConfig(project, environment)
+    else:
+        bc = None
 
     ctx.ensure_object(dict)
-    if ctx.invoked_subcommand != "version":
-        bc = BridgeConfig(project, environment)
     ctx.obj.update({"project": project, "environment": environment, "bridgeconfig": bc})
 
 
@@ -58,7 +64,7 @@ def cli(ctx, project, environment):
 def version():
     from . import VERSION
 
-    print("bridgeconfig: {}".format(VERSION))  # noqa
+    print("bridgeconfig: v{}".format(VERSION))  # noqa
     sys.exit(0)
 
 

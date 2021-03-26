@@ -230,4 +230,4 @@ class BridgeConfig(object):
     def version(self):
         from . import VERSION
 
-        return VERSION
+        return "bridgeconfig v{}".format(VERSION)
