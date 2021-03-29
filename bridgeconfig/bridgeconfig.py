@@ -1,6 +1,7 @@
 import json
 import logging
 import pickle
+from os.path import join
 
 import boto3
 
@@ -76,11 +77,11 @@ class BridgeConfig(object):
 
     @property
     def search_path(self):
-        return (
+        return [
             "/{}/{}/".format(pjt, env)
             for pjt in self.project_search_path
             for env in self.environment_search_path
-        )
+        ]
 
     def get_raw_parameters(self, decrypt=False):
         result = []
@@ -170,9 +171,7 @@ class BridgeConfig(object):
                 for project in reversed(self.project_search_path)
             )
         else:
-            yield from (
-                "{}/{}".format(base, path) for base in reversed(self.search_path)
-            )
+            yield from (join(base, path) for base in reversed(self.search_path))
 
     def get_parameter(self, path, type=None, decrypt=True, default=None):
         if path in self.names:
@@ -190,7 +189,7 @@ class BridgeConfig(object):
             if fullpath in self.lookup:
                 if decrypt:
                     self.decrypt_parameters([fullpath])
-                value = self.lookup[fullpath]
+                value = self.lookup[fullpath]["Value"]
                 break
         else:
             for fullpath in search_path:

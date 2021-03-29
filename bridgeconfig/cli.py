@@ -26,12 +26,25 @@ def pass_bridgeconfig(func):
     return wrapper
 
 
+def complete_registered_projects(ctx, args, incomplete):
+    bc = BridgeConfig("bridgeconfig", "All")
+    return [
+        pjt
+        for pjt in sorted(
+            set(bc.get_parameter(path="Projects", type="csv")) | {"All"},
+            key=lambda v: v.lower(),
+        )
+        if incomplete in pjt
+    ]
+
+
 @click.group()
 @click.option(
     "-p",
     "--project",
     default=None,
     help="project name (default: search for settings.toml",
+    autocompletion=complete_registered_projects,
 )
 @click.option(
     "-e",
