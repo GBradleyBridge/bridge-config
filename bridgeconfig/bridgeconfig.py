@@ -163,7 +163,7 @@ class BridgeConfig(object):
     def parameter_sarch_path(self, path):
         parts = path.lstrip("/").split("/", 2)
         if len(parts) == 3:
-            yield path
+            yield "/" + path.lstrip("/")
         elif len(parts) == 2:
             environment, path = parts
             yield from (
@@ -173,7 +173,9 @@ class BridgeConfig(object):
         else:
             yield from (join(base, path) for base in reversed(self.search_path))
 
-    def get_parameter(self, path, type=None, decrypt=True, default=None):
+    def get_parameter(
+        self, path, type=None, decrypt=True, default=None, include_path=False
+    ):
         if path in self.names:
             search_path = [self.names[path]]
         elif path in self.lookup:
@@ -206,11 +208,13 @@ class BridgeConfig(object):
                 except self.client.exceptions.ParameterNotFound:
                     log.debug("parameter: {} Not Found in ssm".format(fullpath))
             else:
-                return default
+                return (None, default) if include_path else default
 
         if callable(type):
-            return type(value)
-        return DEFAULT_CONVERSIONS.get(type, DEFAULT_CONVERSIONS[None])(value)
+            value = type(value)
+        else:
+            value = DEFAULT_CONVERSIONS.get(type, DEFAULT_CONVERSIONS[None])(value)
+        return (fullpath, value) if include_path else value
 
     def set_parameter(self, path, value, type="String"):
         fullpath = self.get_full_path(path)

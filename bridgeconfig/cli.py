@@ -1,3 +1,4 @@
+import logging
 import sys
 from functools import wraps
 
@@ -40,11 +41,16 @@ def complete_registered_projects(ctx, args, incomplete):
 
 @click.group()
 @click.option(
+    "--verbose",
+    is_flag=True,
+    help="show debugging info",
+    autocompletion=complete_registered_projects,
+)
+@click.option(
     "-p",
     "--project",
     default=None,
     help="project name (default: search for settings.toml",
-    autocompletion=complete_registered_projects,
 )
 @click.option(
     "-e",
@@ -58,9 +64,13 @@ def complete_registered_projects(ctx, args, incomplete):
     help="environment name",
 )
 @click.pass_context
-def cli(ctx, project, environment):
+def cli(ctx, verbose, project, environment):
+    if verbose:
+        logging.basicConfig()
+        logging.getLogger("bridgeconfig").setLevel(logging.DEBUG)
+
     if ctx.invoked_subcommand != "version":
-        if project is None:
+        if ctx.invoked_subcommand != "list" and project is None:
             from .conf import get_app_name
 
             project = get_app_name()
@@ -86,17 +96,24 @@ def version():
 @click.option("-x", "--decrypt", help="decrypt parameters on listing", is_flag=True)
 @pass_bridgeconfig
 def show_paramters(bc, keys, decrypt):
+    if not keys:
+        parameters = [
+            (p["name"], p["value"]) for p in bc.get_all_parameters(decrypt=decrypt)
+        ]
+    else:
+        parameters = [
+            bc.get_parameter(key, decrypt=decrypt, include_path=True) for key in keys
+        ]
+
     print_table(
         ("Path", "Value"),
         (
             (
-                parameter["name"],
-                "<ENCRYPTED>"
-                if not decrypt and bc.is_encrypted(parameter["name"])
-                else parameter["value"],
+                name,
+                "<ENCRYPTED>" if not decrypt and bc.is_encrypted(name) else value,
             )
-            for parameter in bc.get_all_parameters(decrypt=decrypt)
-            if not len(keys) or bc.get_param_name(parameter["name"]) in keys
+            for name, value in parameters
+            if name
         ),
     )
 
