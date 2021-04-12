@@ -77,6 +77,11 @@ class Proxy(object):
             self._obj = self._on_create()
         return getattr(self._obj, attr)
 
+    def __getitem__(self, name):
+        if self._obj is None:
+            self._obj = self._on_create()
+        return self._obj[name]
+
 
 converters["@aws"] = aws_converter
 

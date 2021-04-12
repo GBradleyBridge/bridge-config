@@ -1,0 +1,7 @@
+[default]
+APP_NAME = "PJT"
+ENVIRONMENT = "@format {this.current_env}"
+ENV = "@format {this.ENVIRONMENT}"
+K1 = "@aws K1 decrypt"
+K2 = "@aws K2"
+FULLPATH_KEY = "@aws /OTHER/Prod/Key decrypt"

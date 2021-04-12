@@ -1,7 +1,11 @@
+import os
 import unittest
 from unittest.mock import MagicMock, patch
 
 from bridgeconfig import bridgeconfig
+
+os.environ["ENVIRONMENT"] = "ENV"
+os.environ["SETTINGS_PATH"] = os.path.dirname(os.path.abspath(__file__))
 
 
 class TestBridgeConfig(unittest.TestCase):
@@ -19,6 +23,7 @@ class TestBridgeConfig(unittest.TestCase):
             "/All/ENV/INT": "1",
             "/PJT/ENV/FALSE1": "false",
             "/PJT/ENV/FALSE2": "no",
+            "/OTHER/Prod/Key": "Value",
         }
 
         def get_parameter(Name, WithDecryption=False, *args, **kwargs):
@@ -49,7 +54,12 @@ class TestBridgeConfig(unittest.TestCase):
             {"Name": "/All/All/K3", "Value": "V3", "Type": "String"},
         ]
 
+        self.conf_bc_mock = patch("bridgeconfig.conf.bc._on_create")
+        self.conf_bc = self.conf_bc_mock.start()
+        self.conf_bc.return_value = self.bc
+
     def tearDown(self):
+        self.conf_bc_mock.stop()
         self.boto3_client_mock.stop()
 
     def test_search_path(self):
@@ -150,3 +160,13 @@ class TestBridgeConfig(unittest.TestCase):
         self.assertEquals(self.bc.get_parameter("INT", decrypt=True, type="int"), 1)
         self.assertFalse(self.bc.get_parameter("FALSE1", decrypt=True, type="bool"))
         self.assertFalse(self.bc.get_parameter("FALSE2", decrypt=True, type="bool"))
+
+    def test_conf(self):
+        from bridgeconfig.conf import settings
+
+        self.assertEquals(settings.APP_NAME, "PJT")
+        self.assertEquals(settings.ENV, "ENV")
+        self.assertEquals(settings.K2, "V2")
+        self.assertEquals(settings.K1, "V1")
+        self.assertEquals(settings["K1"], "V1")
+        self.assertEquals(settings["FULLPATH_KEY"], "Value")
