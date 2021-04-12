@@ -5,9 +5,25 @@ from os.path import join
 
 import boto3
 
+EMPTY = object()
+
+
+def to_bool(value):
+    return not (
+        not value or value in ("no", "NO", "No", "0", "false", "False", "FALSE")
+    )
+
+
+class ParameterNotFound(Exception):
+    def __init__(self, key, search_path):
+        self.key = key
+        self.search_path = search_path
+        super().__init__("Parameter {} not found in {}".format(key, search_path))
+
+
 DEFAULT_CONVERSIONS = {
-    "boolean": bool,
-    "bool": bool,
+    "boolean": to_bool,
+    "bool": to_bool,
     "integer": int,
     "int": int,
     "long": int,
@@ -174,7 +190,7 @@ class BridgeConfig(object):
             yield from (join(base, path) for base in reversed(self.search_path))
 
     def get_parameter(
-        self, path, type=None, decrypt=True, default=None, include_path=False
+        self, path, type=None, decrypt=True, default=EMPTY, include_path=False
     ):
         if path in self.names:
             search_path = [self.names[path]]
@@ -208,6 +224,8 @@ class BridgeConfig(object):
                 except self.client.exceptions.ParameterNotFound:
                     log.debug("parameter: {} Not Found in ssm".format(fullpath))
             else:
+                if default is EMPTY:
+                    raise ParameterNotFound(path, search_path)
                 return (None, default) if include_path else default
 
         if callable(type):
