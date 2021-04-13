@@ -10,7 +10,13 @@ setup(
     license="GPL",
     long_description=open("README.md").read(),
     packages=find_packages(exclude=("tests")),
-    install_requires=["boto3", "click", "terminaltables==3.1.0"],
+    install_requires=[
+        "boto3>=1.10.*",
+        "click==7.1.*",
+        "terminaltables==3.1.*",
+        "dynaconf==2.2.*",
+        "toml>=0.10.*",
+    ],
     tests_require=[
         "isort",
         "black",
