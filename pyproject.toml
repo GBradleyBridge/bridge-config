@@ -1,6 +1,6 @@
 [project]
 name = "bridge-config"
-version = "1.5"
+version = "1.6"
 license = "GPL"
 description = "Bridge Marketing SSM simple manager"
 readme = "README.md"
