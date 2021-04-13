@@ -42,12 +42,25 @@ def get_app_name(settings_path=None, envvar="APP_NAME"):
     return app_name
 
 
+def evalute_lazy_recursive(settings, value):
+    if isinstance(value, dict):
+        return {k: evalute_lazy_recursive(settings, v) for k, v in value.items()}
+    if isinstance(value, (list, tuple, set)):
+        return value.__class__(evalute_lazy_recursive(settings, i) for i in value)
+    if getattr(value, "dynaconf_lazy_format", None):
+        return value(settings)
+    return value
+
+
 class Settings(LazySettings):
     def _setup(self):
         for k, v in self._kwargs.items():
             if callable(v):
                 self._kwargs[k] = v()
         super()._setup()
+
+    def __getattr__(self, name):
+        return evalute_lazy_recursive(self, super().__getattr__(name))
 
 
 class AWSFormatter(object):
