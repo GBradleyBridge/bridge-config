@@ -1,0 +1,4 @@
+[flake8]
+max-line-length = 88
+ignore = E203, E501, W503, W504
+exclude = .git,__pycache__,.vscode,.venv,venv,deployment,src/tests,qa,infrastructure,etc,src/model/migrations,bin,src/settings.py,src/site_settings.py,bridge_config.egg-info

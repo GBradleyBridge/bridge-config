@@ -1,0 +1,49 @@
+[project]
+name = "bridge-config"
+version = "1.6"
+license = "GPL"
+description = "Bridge Marketing SSM simple manager"
+readme = "README.md"
+repository = "https://github.com/BridgeMarketing/bridge-config"
+requires-python = ">=3.8"
+author = "Bridge"
+maintainers = [
+  {name = "Guido Accardo", email = "guido.accardo@bridgecorp.com"},
+  {name = "Oscar Quintanar", email = "oscar.quintanar@bridgecorp.com"}
+]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+
+[tool.isort]
+py_version = "38"
+profile = "black"
+line_length = 88
+
+[tool.black]
+line-length = 88
+target_version = ["py38"]
+exclude = '''
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | venv
+    | _build
+    | buck-out
+    | build
+    | dist
+    | \.vscode
+    | deployment
+    | src/tests
+    | qa
+    | infrastructure
+    | etc
+    | src/model/migrations
+    | bridge_config.egg-info
+  )/
+)
+'''
