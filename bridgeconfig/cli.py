@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 from functools import wraps
 
@@ -57,7 +58,7 @@ def complete_registered_projects(ctx, args, incomplete):
     "--environment",
     default="dev",
     type=click.Choice(
-        ("dev", "develop", "stg", "staging", "prod", "production", "All"),
+        ("dev", "develop", "stg", "staging", "prod", "production", "All", "local"),
         case_sensitive=False,
     ),
     envvar="ENVIRONMENT",
@@ -70,7 +71,7 @@ def cli(ctx, verbose, project, environment):
         logging.getLogger("bridgeconfig").setLevel(logging.DEBUG)
 
     if ctx.invoked_subcommand != "version":
-        if ctx.invoked_subcommand != "list" and project is None:
+        if ctx.invoked_subcommand not in ("list", "conf") and project is None:
             from .conf import get_app_name
 
             project = get_app_name()
@@ -168,4 +169,44 @@ def list_projects(bc):
             (pjt,)
             for pjt in bc.get_parameter(path="/bridgeconfig/All/Projects", type="csv")
         ),
+    )
+
+
+@cli.command(
+    name="conf",
+    help="show all the values for a settings.toml for specified project/environment",
+)
+@click.argument(
+    "settings_path",
+    envvar="SETTINGS_PATH",
+)
+@pass_bridgeconfig
+def show_conf(bc, settings_path):
+    from dynaconf import default_settings
+
+    from .conf import guess_settings_path, settings
+
+    valid_filenames = ("settings.toml", "settings.local.toml")
+
+    if os.path.isfile(settings_path):
+        if os.path.basename(settings_path) not in valid_filenames:
+            print(  # noqa
+                f"settings_path file must be {' or '.join(valid_filenames)}",
+                file=sys.stderr,
+            )
+            sys.exit(1)
+        os.environ["SETTINGS_PATH"] = os.path.dirname(settings_path)
+    else:
+        os.environ["SETTINGS_PATH"] = settings_path
+
+    os.environ["ENVIRONMENT"] = bc.environment
+    guess_settings_path(allow_cwd=False)
+
+    print_table(
+        ("Key", "Value"),
+        [
+            (key, getattr(settings, key))
+            for key in settings.keys()
+            if key not in dir(default_settings)
+        ],
     )

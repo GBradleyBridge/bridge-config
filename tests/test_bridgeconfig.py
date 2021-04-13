@@ -54,12 +54,7 @@ class TestBridgeConfig(unittest.TestCase):
             {"Name": "/All/All/K3", "Value": "V3", "Type": "String"},
         ]
 
-        self.conf_bc_mock = patch("bridgeconfig.conf.bc._on_create")
-        self.conf_bc = self.conf_bc_mock.start()
-        self.conf_bc.return_value = self.bc
-
     def tearDown(self):
-        self.conf_bc_mock.stop()
         self.boto3_client_mock.stop()
 
     def test_search_path(self):
@@ -162,11 +157,12 @@ class TestBridgeConfig(unittest.TestCase):
         self.assertFalse(self.bc.get_parameter("FALSE2", decrypt=True, type="bool"))
 
     def test_conf(self):
-        from bridgeconfig.conf import settings
+        from bridgeconfig.conf import aws_formatter, settings
 
-        self.assertEquals(settings.APP_NAME, "PJT")
-        self.assertEquals(settings.ENV, "ENV")
-        self.assertEquals(settings.K2, "V2")
-        self.assertEquals(settings.K1, "V1")
-        self.assertEquals(settings["K1"], "V1")
-        self.assertEquals(settings["FULLPATH_KEY"], "Value")
+        with patch.object(aws_formatter, "bridge_config", self.bc):
+            self.assertEquals(settings.APP_NAME, "PJT")
+            self.assertEquals(settings.ENV, "ENV")
+            self.assertEquals(settings.K2, "V2")
+            self.assertEquals(settings.K1, "V1")
+            self.assertEquals(settings["K1"], "V1")
+            self.assertEquals(settings["FULLPATH_KEY"], "Value")
