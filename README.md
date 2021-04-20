@@ -131,7 +131,7 @@ NOTE: with decryption off, values are truncated to 50 chars
 ┌──────────────────────────────────────────────────┬────────────────────────────────────────────────────┐
 │ Path                                             │ Value                                              │
 ├──────────────────────────────────────────────────┼────────────────────────────────────────────────────┤
-│ /wf-proxy/develop/cm_event_task_start_url        │ http://10.10.156.13/cm/v1/event/task/start         │
+│ /wf-proxy/develop/cm_event_task_start_url        │ http://nope/cm/v1/event/task/start                 │
 │ /wf-proxy/develop/cors_support_enabled           │ True                                               │
 │ /wf-proxy/develop/debug                          │ True                                               │
 │ /wf-proxy/develop/project_transitions            │ {    'TaskType1': {        'TASK_CMP':'PROJ_PLN'   │
@@ -141,10 +141,10 @@ NOTE: with decryption off, values are truncated to 50 chars
 │ /wf-proxy/develop/workfront_automatic_user_id    │ AQICAHjrgw+mYxh8V1QafBX6PnTE38zIn6b91cPlXPNxlwfoKg │
 │ /wf-proxy/develop/workfront_enable_auto          │ True                                               │
 │ /wf-proxy/develop/workfront_user                 │ notifications@wf.bridgemarketing.com               │
-│ /wf-proxy/develop/ccm_event_task_start_url       │ http://10.10.155.10:8081/workfront/routerTask      │
+│ /wf-proxy/develop/ccm_event_task_start_url       │ http://nope:8081/workfront/routerTask              │
 │ /wf-proxy/develop/check_portfolio                │ True                                               │
 │ /wf-proxy/develop/develop_portfolio_ids          │ ['5b45ff9b000aa3a5db15b2e269976a4c', '5b742f970015 │
-│ /wf-proxy/develop/dm_event_task_start_url        │ http://10.10.155.16/dm/v2/datacleanup/start        │
+│ /wf-proxy/develop/dm_event_task_start_url        │ http://nope/dm/v2/datacleanup/start                │
 │ /wf-proxy/develop/sentry_dsn                     │ AQICAHjrgw+mYxh8V1QafBX6PnTE38zIn6b91cPlXPNxlwfoKg │
 │ /wf-proxy/develop/sentry_ignore                  │ ['NotFound', 'MethodNotAllowed', 'BdbQuit', 'BadRe │
 │ /wf-proxy/develop/sqlalchemy_database_uri        │ AQICAHjrgw+mYxh8V1QafBX6PnTE38zIn6b91cPlXPNxlwfoKg │
@@ -182,18 +182,18 @@ $ bridgeconfig -p wf-proxy -e develop show -x
 │ /wf-proxy/develop/workfront_automatic_user_id    │ 5a394076002d8b247f9448078226c445                                                                        │
 │ /wf-proxy/develop/workfront_enable_auto          │ True                                                                                                    │
 │ /wf-proxy/develop/workfront_user                 │ notifications@wf.bridgemarketing.com                                                                    │
-│ /wf-proxy/develop/ccm_event_task_start_url       │ http://10.10.155.10:8081/workfront/routerTask                                                           │
+│ /wf-proxy/develop/ccm_event_task_start_url       │ http://nope:8081/workfront/routerTask                                                                   │
 │ /wf-proxy/develop/check_portfolio                │ True                                                                                                    │
 │ /wf-proxy/develop/develop_portfolio_ids          │ ['5b45ff9b000aa3a5db15b2e269976a4c', '5b742f970015be8cb92789cb63b15619']                                │
-│ /wf-proxy/develop/dm_event_task_start_url        │ http://10.10.155.16/dm/v2/datacleanup/start                                                             │
-│ /wf-proxy/develop/sentry_dsn                     │ https://f5fc521f2c2a45ea8932d188c36465f6:c6af16a5e9484c0497f00986b434d6cf@sentry.io/280888              │
+│ /wf-proxy/develop/dm_event_task_start_url        │ http://nope/dm/v2/datacleanup/start                                                                     │
+│ /wf-proxy/develop/sentry_dsn                     │                                                                                                         │
 │ /wf-proxy/develop/sentry_ignore                  │ ['NotFound', 'MethodNotAllowed', 'BdbQuit', 'BadRequest']                                               │
-│ /wf-proxy/develop/sqlalchemy_database_uri        │ mysql://bridge:kakarulo1987@dpfeaezpj278j1.cixjbteelrgv.us-east-1.rds.amazonaws.com/b20_wp?charset=utf8 │
+│ /wf-proxy/develop/sqlalchemy_database_uri        │                                                                                                         │
 │ /wf-proxy/develop/sqlalchemy_echo                │ True                                                                                                    │
 │ /wf-proxy/develop/version                        │ 1.0.0                                                                                                   │
 │ /wf-proxy/develop/workfront_domain               │ thebridgecorp.sb01.workfront.com                                                                        │
 │ /wf-proxy/develop/testing                        │ True                                                                                                    │
-│ /wf-proxy/develop/workfront_pass                 │ beef6060                                                                                                │
+│ /wf-proxy/develop/workfront_pass                 │                                                                                                         │
 └──────────────────────────────────────────────────┴─────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
