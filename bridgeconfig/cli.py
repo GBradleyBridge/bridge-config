@@ -58,7 +58,8 @@ def complete_registered_projects(ctx, args, incomplete):
     "--environment",
     default="dev",
     type=click.Choice(
-        ("dev", "develop", "stg", "staging", "prod", "production", "All", "local"),
+        ("dev", "develop", "development", "stg", "staging", "prod", "production",
+         "All", "local"),
         case_sensitive=False,
     ),
     envvar="ENVIRONMENT",
