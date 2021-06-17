@@ -41,6 +41,11 @@ DEFAULT_CONVERSIONS = {
 log = logging.getLogger("bridgeconfig")
 
 
+def list_chunks(lst, chunk_size):
+    for index in range(0, len(lst), chunk_size):
+        yield lst[index: index + chunk_size]
+
+
 class BridgeConfig(object):
     def __init__(self, project, environment, value=None, store_type="String"):
         self.project = project
@@ -138,11 +143,12 @@ class BridgeConfig(object):
             if name in parameters or path in parameters
         ]
         if pending_to_decrypt:
-            for param in self.client.get_parameters(
-                Names=pending_to_decrypt, WithDecryption=True
-            )["Parameters"]:
-                self.lookup[param["Name"]]["Value"] = param["Value"]
-                self.lookup[param["Name"]]["Decrypted"] = True
+            for params_chunk in list_chunks(pending_to_decrypt, 10):
+                for param in self.client.get_parameters(
+                    Names=params_chunk, WithDecryption=True
+                )["Parameters"]:
+                    self.lookup[param["Name"]]["Value"] = param["Value"]
+                    self.lookup[param["Name"]]["Decrypted"] = True
 
     def get_all_parameters(self, decrypt=False, count=10, sorted=True):
         if decrypt:
