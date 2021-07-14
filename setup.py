@@ -16,6 +16,7 @@ setup(
         "terminaltables==3.1.*",
         "dynaconf==2.2.*",
         "toml>=0.10.*",
+        "termcolor==1.1.0",
     ],
     tests_require=[
         "isort",
