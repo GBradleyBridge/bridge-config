@@ -6,6 +6,8 @@ from functools import wraps
 import click
 from click.globals import get_current_context
 from terminaltables import SingleTable
+import botocore.exceptions
+from termcolor import colored
 
 from .bridgeconfig import BridgeConfig
 
@@ -38,6 +40,10 @@ def complete_registered_projects(ctx, args, incomplete):
         )
         if incomplete in pjt
     ]
+
+def error_message(message):
+    print(colored(message, 'yellow', 'on_red'))
+    sys.exit(1)
 
 
 @click.group()
@@ -98,14 +104,17 @@ def version():
 @click.option("-x", "--decrypt", help="decrypt parameters on listing", is_flag=True)
 @pass_bridgeconfig
 def show_paramters(bc, keys, decrypt):
-    if not keys:
-        parameters = [
-            (p["name"], p["value"]) for p in bc.get_all_parameters(decrypt=decrypt)
-        ]
-    else:
-        parameters = [
-            bc.get_parameter(key, decrypt=decrypt, include_path=True) for key in keys
-        ]
+    try:
+        if not keys:
+            parameters = [
+                (p["name"], p["value"]) for p in bc.get_all_parameters(decrypt=decrypt)
+            ]
+        else:
+            parameters = [
+                bc.get_parameter(key, decrypt=decrypt, include_path=True) for key in keys
+            ]
+    except botocore.exceptions.ClientError as e:
+        error_message("you don't have permissions to access this project/environment combination")
 
     print_table(
         ("Path", "Value"),
@@ -125,18 +134,22 @@ def show_paramters(bc, keys, decrypt):
 @click.option("-x", "--decrypt", help="decrypt parameters on listing", is_flag=True)
 @pass_bridgeconfig
 def show_paramter_history(bc, key, decrypt):
-    print_table(
-        ("Revision ID", "Value", "Modifier", "Last Modified"),
-        (
+    try:
+        print_table(
+            ("Revision ID", "Value", "Modifier", "Last Modified"),
             (
-                item["Version"],
-                "<ENCRYPTED>" if not decrypt else item["Value"],
-                item["LastModifiedUser"],
-                item["LastModifiedDate"],
-            )
-            for item in bc.get_parameter_history(path=key, decrypt=decrypt)
-        ),
-    )
+                (
+                    item["Version"],
+                    "<ENCRYPTED>" if not decrypt else item["Value"],
+                    item["LastModifiedUser"],
+                    item["LastModifiedDate"],
+                )
+                for item in bc.get_parameter_history(path=key, decrypt=decrypt)
+            ),
+        )
+    except botocore.exceptions.ClientError as e:
+        error_message("you don't have permissions to access the history of this project/environment combination")
+
 
 
 @cli.command(name="set", help="add or modify an existing parameter")
@@ -151,26 +164,35 @@ def show_paramter_history(bc, key, decrypt):
 @click.argument("value")
 @pass_bridgeconfig
 def set_parameter(bc, type, key, value):
-    bc.set_parameter(key, value, type)
+    try:
+        bc.set_parameter(key, value, type)
+    except botocore.exceptions.ClientError as e:
+        error_message("you don't have permissions to add/modify parameters on this project/environment combination")
 
 
 @cli.command(name="delete", help="delete a parameter")
 @click.argument("key")
 @pass_bridgeconfig
 def delete_parameter(bc, key):
-    bc.delete_paramter(key)
+    try:
+        bc.delete_paramter(key)
+    except botocore.exceptions.ClientError as e:
+        error_message("you don't have permissions to delete parameters on this project/environment combination")
 
 
 @cli.command(name="list", help="list available projects")
 @pass_bridgeconfig
 def list_projects(bc):
-    print_table(
-        ("Project Name",),
-        (
-            (pjt,)
-            for pjt in bc.get_parameter(path="/bridgeconfig/All/Projects", type="csv")
-        ),
-    )
+    try:
+        print_table(
+            ("Project Name",),
+            (
+                (pjt,)
+                for pjt in bc.get_parameter(path="/bridgeconfig/All/Projects", type="csv")
+            ),
+        )
+    except botocore.exceptions.ClientError as e:
+        error_message("you don't have permissions to access general parameters of Bridge")
 
 
 @cli.command(
