@@ -43,7 +43,7 @@ log = logging.getLogger("bridgeconfig")
 
 def list_chunks(lst, chunk_size):
     for index in range(0, len(lst), chunk_size):
-        yield lst[index: index + chunk_size]
+        yield lst[index : index + chunk_size]
 
 
 class BridgeConfig(object):
@@ -263,27 +263,27 @@ class BridgeConfig(object):
 if __name__ == "__main__":
     logging.basicConfig()
     logging.getLogger().setLevel(logging.INFO)
-    BC = BridgeConfig('test', 'develop')
-    #print(BC.get_raw_parameters(decrypt=True))
-    print(BC.get_parameter_history('debug', decrypt=True))
-    #print(BC.get_parameter('debug', 'boolean'))
-    #print(BC.get_parameter('json', 'json'))
+    BC = BridgeConfig("test", "develop")
+    # print(BC.get_raw_parameters(decrypt=True))
+    print(BC.get_parameter_history("debug", decrypt=True))  # noqa
+    # print(BC.get_parameter('debug', 'boolean'))
+    # print(BC.get_parameter('json', 'json'))
     # print BC.get_parameter('json2', 'code')
     # print BC.get_parameter('json3', 'code')
     # print BC.get_parameter('db_user', 'string')
-    #print( BC.get_parameter(path='db_password', type='string', decrypt=False) )
-    #print( BC.is_encrypted(path='db_password') )
-    #print( BC.is_encrypted(path='db_password') )
-    #print( BC.is_encrypted(path='db_password') )
-    #print( BC.is_encrypted(path='db_password') )
-    #print( BC.is_encrypted(path='db_password') )
-    #print( BC.is_encrypted(path='db_password') )
+    # print( BC.get_parameter(path='db_password', type='string', decrypt=False) )
+    # print( BC.is_encrypted(path='db_password') )
+    # print( BC.is_encrypted(path='db_password') )
+    # print( BC.is_encrypted(path='db_password') )
+    # print( BC.is_encrypted(path='db_password') )
+    # print( BC.is_encrypted(path='db_password') )
+    # print( BC.is_encrypted(path='db_password') )
     # print BC.get_parameter('no_existe', 'string')
     # print BC.get_parameter('key1/subkey1', 'string')
     # print BC.get_all_parameters()
-    #for x in BC.get_all_parameters():
+    # for x in BC.get_all_parameters():
     #    print(x)
-    #BC.refresh_cache()
+    # BC.refresh_cache()
     # print BC.get_all_parameters(decrypt=True)
     # BC.set_parameter('new_param', '123abc456', 'String')
     # print BC.delete_paramter('123abc456')
