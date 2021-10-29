@@ -3,11 +3,11 @@ import os
 import sys
 from functools import wraps
 
+import botocore.exceptions
 import click
 from click.globals import get_current_context
-from terminaltables import SingleTable
-import botocore.exceptions
 from termcolor import colored
+from terminaltables import SingleTable
 
 from .bridgeconfig import BridgeConfig
 
@@ -41,8 +41,9 @@ def complete_registered_projects(ctx, args, incomplete):
         if incomplete in pjt
     ]
 
+
 def error_message(message):
-    print(colored(message, 'yellow', 'on_red'))
+    print(colored(message, "yellow", "on_red"))  # noqa
     sys.exit(1)
 
 
@@ -64,8 +65,17 @@ def error_message(message):
     "--environment",
     default="dev",
     type=click.Choice(
-        ("dev", "develop", "development", "stg", "staging", "prod", "production",
-         "All", "local"),
+        (
+            "dev",
+            "develop",
+            "development",
+            "stg",
+            "staging",
+            "prod",
+            "production",
+            "All",
+            "local",
+        ),
         case_sensitive=False,
     ),
     envvar="ENVIRONMENT",
@@ -111,10 +121,13 @@ def show_paramters(bc, keys, decrypt):
             ]
         else:
             parameters = [
-                bc.get_parameter(key, decrypt=decrypt, include_path=True) for key in keys
+                bc.get_parameter(key, decrypt=decrypt, include_path=True)
+                for key in keys
             ]
-    except botocore.exceptions.ClientError as e:
-        error_message("you don't have permissions to access this project/environment combination")
+    except botocore.exceptions.ClientError:
+        error_message(
+            "you don't have permissions to access this project/environment combination"
+        )
 
     print_table(
         ("Path", "Value"),
@@ -147,9 +160,10 @@ def show_paramter_history(bc, key, decrypt):
                 for item in bc.get_parameter_history(path=key, decrypt=decrypt)
             ),
         )
-    except botocore.exceptions.ClientError as e:
-        error_message("you don't have permissions to access the history of this project/environment combination")
-
+    except botocore.exceptions.ClientError:
+        error_message(
+            "you don't have permissions to access the history of this project/environment combination"
+        )
 
 
 @cli.command(name="set", help="add or modify an existing parameter")
@@ -166,8 +180,10 @@ def show_paramter_history(bc, key, decrypt):
 def set_parameter(bc, type, key, value):
     try:
         bc.set_parameter(key, value, type)
-    except botocore.exceptions.ClientError as e:
-        error_message("you don't have permissions to add/modify parameters on this project/environment combination")
+    except botocore.exceptions.ClientError:
+        error_message(
+            "you don't have permissions to add/modify parameters on this project/environment combination"
+        )
 
 
 @cli.command(name="delete", help="delete a parameter")
@@ -176,8 +192,10 @@ def set_parameter(bc, type, key, value):
 def delete_parameter(bc, key):
     try:
         bc.delete_paramter(key)
-    except botocore.exceptions.ClientError as e:
-        error_message("you don't have permissions to delete parameters on this project/environment combination")
+    except botocore.exceptions.ClientError:
+        error_message(
+            "you don't have permissions to delete parameters on this project/environment combination"
+        )
 
 
 @cli.command(name="list", help="list available projects")
@@ -188,11 +206,15 @@ def list_projects(bc):
             ("Project Name",),
             (
                 (pjt,)
-                for pjt in bc.get_parameter(path="/bridgeconfig/All/Projects", type="csv")
+                for pjt in bc.get_parameter(
+                    path="/bridgeconfig/All/Projects", type="csv"
+                )
             ),
         )
-    except botocore.exceptions.ClientError as e:
-        error_message("you don't have permissions to access general parameters of Bridge")
+    except botocore.exceptions.ClientError:
+        error_message(
+            "you don't have permissions to access general parameters of Bridge"
+        )
 
 
 @cli.command(
@@ -231,5 +253,67 @@ def show_conf(bc, settings_path):
             (key, getattr(settings, key))
             for key in settings.keys()
             if key not in dir(default_settings)
+        ],
+    )
+
+
+class Param:
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+        _, self.project, self.env, self.key = name.split("/")
+
+    def __str__(self):
+        return self.key
+
+    def __eq__(self, other):
+        return self.key == other.key
+
+    def __lt__(self, other):
+        return self.key < other.key
+
+    def __gt__(self, other):
+        return self.key > other.key
+
+    def __hash__(self):
+        return hash(self.key)
+
+
+@cli.command(
+    name="diff",
+    help="show all the key differences between 2 environments",
+)
+@click.argument(
+    "environments",
+    type=click.Choice(
+        ("dev", "stg", "prod", "all"),
+        case_sensitive=False,
+    ),
+    nargs=-1,
+)
+@pass_bridgeconfig
+def show_diff(bc, environments):
+    def get_env_params(env):
+        return [
+            p
+            for p in (Param(**p) for p in env.get_all_parameters())
+            if p.env == env.environment
+        ]
+
+    envs = [bc]
+    envs += [BridgeConfig(bc.project, e) for e in environments if e != bc.environment]
+    keys = [get_env_params(env) for env in envs]
+
+    all_keys = set()
+    for env_keys in keys:
+        all_keys = all_keys | set(env_keys)
+
+    headers = ("Keys",) + tuple(e.environment for e in envs)
+
+    print_table(
+        headers,
+        [
+            (k,) + tuple("X" if k in env_keys else "" for env_keys in keys)
+            for k in sorted(all_keys)
         ],
     )
