@@ -166,3 +166,7 @@ class TestBridgeConfig(unittest.TestCase):
             self.assertEquals(settings.K1, "V1")
             self.assertEquals(settings["K1"], "V1")
             self.assertEquals(settings["FULLPATH_KEY"], "Value")
+            data_file = os.path.join(os.path.dirname(__file__), 'test_data.txt')
+            with open(data_file) as f:
+                expected = f.read()
+            self.assertEquals(settings["READFILE_KEY"], expected)

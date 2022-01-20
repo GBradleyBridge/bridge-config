@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="bridge-config",
-    version="1.7.2",
+    version="1.7.3",
     description="Bridge Marketing SSM simple manager",
     url="https://github.com/BridgeMarketing/bridge-config",
     author="Bridge",

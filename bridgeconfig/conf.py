@@ -106,6 +106,21 @@ converters[f"@{aws_formatter.token}"] = lambda value: LazyFormat(
 )
 
 
+class FileReadFormatter(object):
+    token = "file"
+
+    def __call__(self, file_path, **context):
+        with open(os.path.join(context['this'].ROOT_PATH_FOR_DYNACONF, file_path)) as f:
+            return f.read()
+
+
+file_read_formatter = FileReadFormatter()
+
+
+converters[f"@{file_read_formatter.token}"] = lambda value: LazyFormat(
+    value, formatter=file_read_formatter
+)
+
 settings = Settings(
     ENVIRONMENTS_FOR_DYNACONF=True,
     PRELOAD_FOR_DYNACONF="static_settings.py",
